@@ -24,18 +24,18 @@ Filesys::Virtual::SSH -
 
 sub list {
     my $self = shift;
-    my $final_path = $self->_path_from_root( shift );
+    my $path = $self->_path_from_root( shift );
 
-    my @files = `ls -a $final_path 2> /dev/null`;
+    my @files = `ls -a $path 2> /dev/null`;
     chomp (@files);
     return map { basename $_ } @files;
 }
 
 sub list_details {
     my $self = shift;
-    my $final_path = $self->_path_from_root( shift );
+    my $path = $self->_path_from_root( shift );
 
-    my @lines = `ls -al $final_path 2> /dev/null`;
+    my @lines = `ls -al $path 2> /dev/null`;
     shift @lines; # I don't care about 'total 42'
     chomp @lines;
     return @lines;
@@ -51,7 +51,7 @@ sub chdir {
     return $self->cwd( $new_cwd );
 }
 
-# well if ::Plain can't be bothered either
+# well if ::Plain can't be bothered, we can't be bothered either
 sub modtime { return (0, "") }
 
 sub stat {
@@ -73,6 +73,13 @@ sub test {
     my $file = $self->_path_from_root( shift );
     my $stat = `perl -e'print -$test "$file"'`;
     return $stat;
+}
+
+sub delete {
+    my $self = shift;
+    my $file = $self->_path_from_root( shift );
+    my $ret = `perl -e'print unlink("$file") ? 1 : 0'`;
+    return $ret;
 }
 
 =head1 AUTHOR
@@ -97,7 +104,6 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Filesys::Virtual::SSH>.
 =head1 SEE ALSO
 
 Filesys::Virtual, POE::Component::Server::FTP
-
 
 =cut
 

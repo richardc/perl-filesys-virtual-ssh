@@ -87,6 +87,12 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
 
     ok( $vfs->test( "e", "/foo" ), "test -e /foo" );
     ok( !$vfs->test( "e", "/does_not_exist" ), "!test -e /does_not_exist" );
+
+    ok( $vfs->delete( "/foo" ), "delete /foo" );
+    ok( !-e "$root/foo", "it really went" );
+
+    ok( !$vfs->delete( "/does_not_exist" ), "failed to delete /does_not_exist" );
+    ok( !$vfs->delete( "/bar" ), "failed to delete /bar" );
 }
 
 
