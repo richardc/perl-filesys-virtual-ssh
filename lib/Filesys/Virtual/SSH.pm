@@ -15,7 +15,25 @@ Filesys::Virtual::SSH - remote execution Virtual Filesystem
 
 =head1 SYNOPSIS
 
+ use Filesys::Virtual::SSH;
+ my $fs = Filesys::Virtual::SSH->new(
+     host      => 'localhost',
+     cwd       => '/',
+     root_path => '/',
+     home_path => '/home',
+ );
+ my @files = $fs->list("/");
+
+ # a deeply inneffecient equivalent to
+ # my @files = `ls -a /`;
+ # chomp @files;
+
+
 =head1 DESCRIPTION
+
+Filesys::Virtual::SSH invokes the ssh command line utility in order to
+make a remote filesystem have the same api as any other.  It's
+primarily useful for POE::Component::Server::FTP.
 
 =cut
 

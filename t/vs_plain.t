@@ -1,7 +1,9 @@
 #!perl
 use strict;
 use warnings;
-use Test::More tests => 80;
+my $count;
+BEGIN { $count = 40 };
+use Test::More tests => $count * 2;
 use Filesys::Virtual::Plain;
 use Filesys::Virtual::SSH;
 use File::Slurp::Tree;
@@ -23,18 +25,18 @@ my $tree = {
     },
 };
 
+SKIP:
 for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
-    if ($class =~ /SSH/ && hostname ne 'brains') {
-        ok( 1, "Not on brains, not doing SSH testing" );
-        next;
+    if ($class =~ /::SSH$/ && hostname ne 'brains') {
+        skip( "Not on brains, not doing SSH testing", $count );
     }
     my $root = cwd().'/t/test_root';
     # ick
     `rm -rf $root`;
     spew_tree( $root => $tree );
     isa_ok( my $vfs = $class->new({
-        host => 'localhost',
-        cwd => '/',
+        host      => 'localhost',
+        cwd       => '/',
         root_path => $root,
         home_path => '/home',
     }), $class );
