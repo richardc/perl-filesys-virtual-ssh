@@ -51,6 +51,9 @@ sub chdir {
     return $self->cwd( $new_cwd );
 }
 
+# well if ::Plain can't be bothered either
+sub modtime { return (0, "") }
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>

@@ -78,6 +78,10 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     diag( $ls_al[2] );
     like( $ls_al[2], qr/\sbaz$/, "seemed to get bar" );
 
+    my $now = time;
+    utime $now, $now, "$root/foo";
+    is_deeply( [ $vfs->modtime( "/foo" ) ], [ 0, "" ], "modtime /foo" );
+
 }
 
 
