@@ -7,7 +7,7 @@ use String::ShellQuote;
 use IO::File;
 use base qw( Filesys::Virtual Class::Accessor::Fast );
 __PACKAGE__->mk_accessors(qw( cwd root_path home_path host ));
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -16,12 +16,12 @@ Filesys::Virtual::SSH - remote execution Virtual Filesystem
 =head1 SYNOPSIS
 
  use Filesys::Virtual::SSH;
- my $fs = Filesys::Virtual::SSH->new(
+ my $fs = Filesys::Virtual::SSH->new({
      host      => 'localhost',
      cwd       => '/',
      root_path => '/',
      home_path => '/home',
- );
+ });
  my @files = $fs->list("/");
 
  # a deeply inneffecient equivalent to
@@ -164,6 +164,10 @@ sub open_write {
 
 *close_write = \&close_read;
 
+1;
+
+__END__
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>
@@ -188,5 +192,3 @@ L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Filesys::Virtual::SSH>.
 Filesys::Virtual, POE::Component::Server::FTP
 
 =cut
-
-1;

@@ -1,3 +1,6 @@
-0.01	Friday 30th April, 2003
+0.02	Friday 30th April, 2004
+	unstealthed the dependency on String::ShellQuote, fixed a docubug
+
+0.01	Friday 30th April, 2004
 	Initial CPAN release
 
