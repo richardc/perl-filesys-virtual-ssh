@@ -5,9 +5,11 @@ Module::Build->new(
     license     => 'perl',
     requires    => {
         'perl' => 5.006,
+        'Filesys::Virtual' => 0,
     },
     build_requires => {
         'Test::More' => 0,
+        'File::Slurp::Tree' => 0,
     },
     create_makefile_pl => 'traditional',
    )->create_build_script;
