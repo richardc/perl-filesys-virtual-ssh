@@ -76,13 +76,6 @@ sub test {
     return $stat;
 }
 
-sub delete {
-    my $self = shift;
-    my $file = $self->_path_from_root( shift );
-    my $ret = `perl -e'print unlink("$file") ? 1 : 0'`;
-    return $ret;
-}
-
 sub chmod {
     my $self = shift;
     my $mode = shift;
@@ -93,13 +86,17 @@ sub chmod {
 
 sub mkdir {
     my $self = shift;
-    my $dir = shift;
-    my $path = $self->_path_from_root( $dir );
-    return 2 if $self->test( 'd', $dir );
-    my $ret = `perl -e'print mkdir( "$path", 0755 ) ? 1 : 0'`;
+    my $path = $self->_path_from_root( shift );
+    my $ret = `perl -e'print -d "$path" ? 2 : mkdir( "$path", 0755 ) ? 1 : 0'`;
     return $ret;
 }
 
+sub delete {
+    my $self = shift;
+    my $file = $self->_path_from_root( shift );
+    my $ret = `perl -e'print unlink("$file") ? 1 : 0'`;
+    return $ret;
+}
 
 sub rmdir {
     my $self = shift;
