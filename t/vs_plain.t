@@ -1,7 +1,7 @@
 #!perl
 use strict;
 use warnings;
-use Test::More 'no_plan';
+use Test::More tests => 80;
 use Filesys::Virtual::Plain;
 use Filesys::Virtual::SSH;
 use File::Slurp::Tree;
@@ -121,6 +121,4 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     print $afh $tree->{foo};
     ok( $vfs->close_write( $afh ) , "closed" );
     is( slurp_tree( $root )->{foo}, $tree->{foo}.$tree->{foo}, "wrote ok" );
-
-
 }

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use File::Basename qw( basename );
 use Filesys::Virtual::Plain ();
+use String::ShellQuote;
 use IO::File;
 use base qw( Filesys::Virtual Class::Accessor::Fast );
 __PACKAGE__->mk_accessors(qw( cwd root_path home_path host ));
@@ -10,7 +11,7 @@ our $VERSION = '0.01';
 
 =head1 NAME
 
-Filesys::Virtual::SSH -
+Filesys::Virtual::SSH - remote execution Virtual Filesystem
 
 =head1 SYNOPSIS
 
@@ -23,11 +24,25 @@ Filesys::Virtual::SSH -
 *_path_from_root = \&Filesys::Virtual::Plain::_path_from_root;
 *_resolve_path   = \&Filesys::Virtual::Plain::_resolve_path;
 
+
+sub _remote_command {
+    my $self = shift;
+    return "ssh ". $self->host . " ";
+}
+
+sub _remotely {
+    my $self = shift;
+    my $what = shift;
+    my $cmd = $self->_remote_command . shell_quote $what;
+    #warn $cmd;
+    `$cmd`;
+}
+
 sub list {
     my $self = shift;
     my $path = $self->_path_from_root( shift );
 
-    my @files = `ls -a $path 2> /dev/null`;
+    my @files = $self->_remotely( qq{ls -a $path 2> /dev/null} );
     chomp (@files);
     return map { basename $_ } @files;
 }
@@ -36,7 +51,7 @@ sub list_details {
     my $self = shift;
     my $path = $self->_path_from_root( shift );
 
-    my @lines = `ls -al $path 2> /dev/null`;
+    my @lines = $self->_remotely( qq{ls -al $path 2> /dev/null});
     shift @lines; # I don't care about 'total 42'
     chomp @lines;
     return @lines;
@@ -59,7 +74,7 @@ sub stat {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
 
-    my $stat = `perl -e'print join ",", stat "$file"'`;
+    my $stat = $self->_remotely(qq{perl -e'print join ",", stat "$file"'});
     return split /,/, $stat;
 }
 
@@ -72,7 +87,7 @@ sub test {
     my $self = shift;
     my $test = shift;
     my $file = $self->_path_from_root( shift );
-    my $stat = `perl -e'print -$test "$file"'`;
+    my $stat = $self->_remotely( qq{perl -e'print -$test "$file"'});
     return $stat;
 }
 
@@ -80,28 +95,28 @@ sub chmod {
     my $self = shift;
     my $mode = shift;
     my $file = $self->_path_from_root( shift );
-    my $ret = `perl -e'print chmod( $mode, "$file") ? 1 : 0'`;
+    my $ret = $self->_remotely( qq{perl -e'print chmod( $mode, "$file") ? 1 : 0'});
     return $ret;
 }
 
 sub mkdir {
     my $self = shift;
     my $path = $self->_path_from_root( shift );
-    my $ret = `perl -e'print -d "$path" ? 2 : mkdir( "$path", 0755 ) ? 1 : 0'`;
+    my $ret = $self->_remotely( qq{perl -e'print -d "$path" ? 2 : mkdir( "$path", 0755 ) ? 1 : 0'});
     return $ret;
 }
 
 sub delete {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
-    my $ret = `perl -e'print unlink("$file") ? 1 : 0'`;
+    my $ret = $self->_remotely( qq{perl -e'print unlink("$file") ? 1 : 0'});
     return $ret;
 }
 
 sub rmdir {
     my $self = shift;
     my $path = $self->_path_from_root( shift );
-    my $ret = `perl -e'print -d "$path" ? rmdir "$path" ? 1 : 0 : unlink "$path" ? 1 : 0'`;
+    my $ret = $self->_remotely( qq{perl -e'print -d "$path" ? rmdir "$path" ? 1 : 0 : unlink "$path" ? 1 : 0'} );
     return $ret;
 
 }
@@ -112,7 +127,7 @@ sub login { 1 }
 sub open_read {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
-    return IO::File->new("cat $file |");
+    return IO::File->new($self->_remote_command."cat $file |");
 }
 
 sub close_read {
@@ -125,8 +140,8 @@ sub close_read {
 sub open_write {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
-    return IO::File->new("|cat >> $file") if @_;
-    return IO::File->new("|cat > $file");
+    return IO::File->new("|".$self->_remote_command."cat >> $file") if @_;
+    return IO::File->new("|".$self->_remote_command."cat > $file");
 }
 
 *close_write = \&close_read;
