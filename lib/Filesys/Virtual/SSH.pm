@@ -90,6 +90,15 @@ sub chmod {
     return $ret;
 }
 
+sub mkdir {
+    my $self = shift;
+    my $dir = shift;
+    my $path = $self->_path_from_root( $dir );
+    return 2 if $self->test( 'd', $dir );
+    my $ret = `perl -e'print mkdir( "$path", 0755 ) ? 1 : 0'`;
+    return $ret;
+}
+
 
 =head1 AUTHOR
 

@@ -99,6 +99,7 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     ok( $vfs->chmod( 0600, "/bar/baz" ), "chmod /bar/baz" );
     is( (stat "$root/bar/baz" )[2] & 07777, 0600, "chmod took" );
 
+    ok( $vfs->mkdir( "/ninja" ), "mkdir ninja" );
+    ok( -d "$root/ninja", "it was really made" );
+
 }
-
-
