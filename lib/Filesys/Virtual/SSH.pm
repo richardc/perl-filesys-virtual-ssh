@@ -82,6 +82,15 @@ sub delete {
     return $ret;
 }
 
+sub chmod {
+    my $self = shift;
+    my $mode = shift;
+    my $file = $self->_path_from_root( shift );
+    my $ret = `perl -e'print chmod( $mode, "$file") ? 1 : 0'`;
+    return $ret;
+}
+
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>

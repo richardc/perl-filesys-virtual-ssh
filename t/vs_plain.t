@@ -29,6 +29,8 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
         next;
     }
     my $root = cwd().'/t/test_root';
+    # ick
+    `rm -rf $root`;
     spew_tree( $root => $tree );
     isa_ok( my $vfs = $class->new({
         host => 'localhost',
@@ -93,6 +95,10 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
 
     ok( !$vfs->delete( "/does_not_exist" ), "failed to delete /does_not_exist" );
     ok( !$vfs->delete( "/bar" ), "failed to delete /bar" );
+
+    ok( $vfs->chmod( 0600, "/bar/baz" ), "chmod /bar/baz" );
+    is( (stat "$root/bar/baz" )[2] & 07777, 0600, "chmod took" );
+
 }
 
 
