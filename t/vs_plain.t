@@ -1,11 +1,12 @@
 #!perl
 use strict;
 use warnings;
-use Test::More tests => 28;
+use Test::More 'no_plan';
 use Filesys::Virtual::Plain;
 use Filesys::Virtual::SSH;
 use File::Slurp::Tree;
 use Cwd;
+use Sys::Hostname;
 
 if (eval { require Test::Differences; 1 }) {
     no warnings 'redefine';
@@ -23,6 +24,10 @@ my $start_tree = {
 };
 
 for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
+    if ($class =~ /SSH/ && hostname ne 'brains') {
+        ok( 1, "Not on brains, not doing SSH testing" );
+        next;
+    }
     my $root = cwd().'/t/test_root';
     spew_tree( $root => $start_tree );
     isa_ok( my $vfs = $class->new({
