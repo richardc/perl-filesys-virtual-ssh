@@ -108,5 +108,9 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     ok( !$vfs->rmdir( "/does_not_exist" ), "failed to rmdir /does_not_exist" );
     ok( !$vfs->rmdir( "/bar" ), "failed to rmdir /bar" );
 
+    ok( my $ifh = $vfs->open_read( "/bar/baz" ), "open_read /bar/baz" );
+    is( <$ifh>, $tree->{bar}{baz}, "get contents of /bar/baz" );
+    ok( $vfs->close_read( $ifh ), "closed" );
+
 
 }

@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use File::Basename qw( basename );
 use Filesys::Virtual::Plain ();
+use IO::File;
 use base qw( Filesys::Virtual Class::Accessor::Fast );
 __PACKAGE__->mk_accessors(qw( cwd root_path home_path host ));
 our $VERSION = '0.01';
@@ -107,6 +108,24 @@ sub rmdir {
     return $ret;
 
 }
+
+# Yeah Yeah, Whatever
+sub login { 1 }
+
+sub open_read {
+    my $self = shift;
+    my $file = $self->_path_from_root( shift );
+    return IO::File->new("cat $file |");
+}
+
+sub close_read {
+    my $self = shift;
+    my $fh = shift;
+    close $fh;
+    return 1;
+}
+
+*close_write = \&close_read;
 
 =head1 AUTHOR
 
