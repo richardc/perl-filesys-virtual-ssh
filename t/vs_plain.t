@@ -112,5 +112,15 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     is( <$ifh>, $tree->{bar}{baz}, "get contents of /bar/baz" );
     ok( $vfs->close_read( $ifh ), "closed" );
 
+    ok( my $ofh = $vfs->open_write( "/foo" ), "open_write /foo" );
+    print $ofh $tree->{foo};
+    ok( $vfs->close_write( $ofh ) , "closed" );
+    is( slurp_tree( $root )->{foo}, $tree->{foo}, "wrote ok" );
+
+    ok( my $afh = $vfs->open_write( "/foo", 1 ), "open_write /foo append" );
+    print $afh $tree->{foo};
+    ok( $vfs->close_write( $afh ) , "closed" );
+    is( slurp_tree( $root )->{foo}, $tree->{foo}.$tree->{foo}, "wrote ok" );
+
 
 }

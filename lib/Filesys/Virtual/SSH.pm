@@ -125,6 +125,13 @@ sub close_read {
     return 1;
 }
 
+sub open_write {
+    my $self = shift;
+    my $file = $self->_path_from_root( shift );
+    return IO::File->new("|cat >> $file") if @_;
+    return IO::File->new("|cat > $file");
+}
+
 *close_write = \&close_read;
 
 =head1 AUTHOR
