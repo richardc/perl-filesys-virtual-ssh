@@ -83,6 +83,8 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
 
     is( $vfs->size( "/foo" ), length $tree->{foo}, "size /foo" );
 
+    is( ( $vfs->stat("/foo") )[7], length $tree->{foo}, "stat /foo" );
+
 }
 
 

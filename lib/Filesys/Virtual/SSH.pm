@@ -54,11 +54,17 @@ sub chdir {
 # well if ::Plain can't be bothered either
 sub modtime { return (0, "") }
 
-sub size {
+sub stat {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
-    my $size = `perl -e'print +(stat "$file")[7]'`;
-    return $size;
+
+    my $stat = `perl -e'print join ",", stat "$file"'`;
+    return split /,/, $stat;
+}
+
+sub size {
+    my $self = shift;
+    return ( $self->stat( shift ))[7];
 }
 
 =head1 AUTHOR
