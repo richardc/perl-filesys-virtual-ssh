@@ -16,7 +16,7 @@ if (eval { require Test::Differences; 1 }) {
 # A comparitive test against Filesys::Virtual::Plain, more so I
 # understand the api as Filesys::Virtual is low on docs
 
-my $start_tree = {
+my $tree = {
     foo => "I r foo\n",
     bar => {
         baz => "I r not foo\n",
@@ -29,7 +29,7 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
         next;
     }
     my $root = cwd().'/t/test_root';
-    spew_tree( $root => $start_tree );
+    spew_tree( $root => $tree );
     isa_ok( my $vfs = $class->new({
         host => 'localhost',
         cwd => '/',
@@ -39,11 +39,11 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
 
     is( $vfs->cwd, "/", "cwd" );
     is_deeply( [ $vfs->list( "/" ) ],
-               [ sort qw( . .. ), keys %$start_tree ],
+               [ sort qw( . .. ), keys %$tree ],
                "list /" );
 
     is_deeply( [ $vfs->list( "" ) ],
-               [ sort qw( . .. ), keys %$start_tree ],
+               [ sort qw( . .. ), keys %$tree ],
                "list ''" );
 
     is_deeply( [ $vfs->list( "foo" ) ],
@@ -55,22 +55,22 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
                "list i_do_not_exist" );
 
     is_deeply( [ $vfs->list( "/bar" ) ],
-               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               [ sort qw( . .. ), keys %{ $tree->{bar} } ],
                "list /bar" );
 
     is_deeply( [ $vfs->list( "/bar" ) ],
-               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               [ sort qw( . .. ), keys %{ $tree->{bar} } ],
                "list bar" );
 
     is( $vfs->chdir( 'bar' ), "/bar", "chdir bar" );
     is( $vfs->cwd, "/bar", "cwd is /bar" );
 
     is_deeply( [ $vfs->list( "" ) ],
-               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               [ sort qw( . .. ), keys %{ $tree->{bar} } ],
                "list ''" );
 
     is_deeply( [ $vfs->list( "/" ) ],
-               [ sort qw( . .. ), keys %$start_tree ],
+               [ sort qw( . .. ), keys %$tree ],
                "list /" );
 
     my @ls_al = $vfs->list_details("");
@@ -78,9 +78,10 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     diag( $ls_al[2] );
     like( $ls_al[2], qr/\sbaz$/, "seemed to get bar" );
 
-    my $now = time;
-    utime $now, $now, "$root/foo";
+    # ::Plain just doesn't bother - that's easy enough
     is_deeply( [ $vfs->modtime( "/foo" ) ], [ 0, "" ], "modtime /foo" );
+
+    is( $vfs->size( "/foo" ), length $tree->{foo}, "size /foo" );
 
 }
 

@@ -54,6 +54,13 @@ sub chdir {
 # well if ::Plain can't be bothered either
 sub modtime { return (0, "") }
 
+sub size {
+    my $self = shift;
+    my $file = $self->_path_from_root( shift );
+    my $size = `perl -e'print +(stat "$file")[7]'`;
+    return $size;
+}
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>
