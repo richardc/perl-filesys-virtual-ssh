@@ -67,6 +67,14 @@ sub size {
     return ( $self->stat( shift ))[7];
 }
 
+sub test {
+    my $self = shift;
+    my $test = shift;
+    my $file = $self->_path_from_root( shift );
+    my $stat = `perl -e'print -$test "$file"'`;
+    return $stat;
+}
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>

@@ -85,6 +85,8 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
 
     is( ( $vfs->stat("/foo") )[7], length $tree->{foo}, "stat /foo" );
 
+    ok( $vfs->test( "e", "/foo" ), "test -e /foo" );
+    ok( !$vfs->test( "e", "/does_not_exist" ), "!test -e /does_not_exist" );
 }
 
 
