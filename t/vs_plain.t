@@ -1,7 +1,7 @@
 #!perl
 use strict;
 use warnings;
-use Test::More tests => 3 * 2;
+use Test::More tests => 24;
 use Filesys::Virtual::Plain;
 use Filesys::Virtual::SSH;
 use File::Slurp::Tree;
@@ -14,7 +14,12 @@ if (eval { require Test::Differences; 1 }) {
 # A comparitive test against Filesys::Virtual::Plain, more so I
 # understand the api as Filesys::Virtual is low on docs
 
-my $start_tree = { foo => "I r foo\n" };
+my $start_tree = {
+    foo => "I r foo\n",
+    bar => {
+        baz => "I r not foo\n",
+    },
+};
 
 for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     my $root = cwd().'/t/test_root';
@@ -27,6 +32,41 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     }), $class );
 
     is( $vfs->cwd, "/", "cwd" );
-    is_deeply( [ $vfs->list( "/" ) ], [qw( . .. ), keys %$start_tree], "list test_root" );
+    is_deeply( [ $vfs->list( "/" ) ],
+               [ sort qw( . .. ), keys %$start_tree ],
+               "list /" );
+
+    is_deeply( [ $vfs->list( "" ) ],
+               [ sort qw( . .. ), keys %$start_tree ],
+               "list ''" );
+
+    is_deeply( [ $vfs->list( "foo" ) ],
+               [ "foo" ],
+               "list foo" );
+
+    is_deeply( [ $vfs->list( "i_do_not_exist" ) ],
+               [ ],
+               "list i_do_not_exist" );
+
+    is_deeply( [ $vfs->list( "/bar" ) ],
+               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               "list /bar" );
+
+    is_deeply( [ $vfs->list( "/bar" ) ],
+               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               "list bar" );
+
+    is( $vfs->chdir( 'bar' ), "/bar", "chdir bar" );
+    is( $vfs->cwd, "/bar", "cwd is /bar" );
+
+    is_deeply( [ $vfs->list( "" ) ],
+               [ sort qw( . .. ), keys %{ $start_tree->{bar} } ],
+               "list ''" );
+
+    is_deeply( [ $vfs->list( "/" ) ],
+               [ sort qw( . .. ), keys %$start_tree ],
+               "list /" );
+
 }
+
 
