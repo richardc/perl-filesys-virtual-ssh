@@ -31,6 +31,16 @@ sub list {
     return map { basename $_ } @files;
 }
 
+sub list_details {
+    my $self = shift;
+    my $final_path = $self->_path_from_root( shift );
+
+    my @lines = `ls -al $final_path 2> /dev/null`;
+    shift @lines; # I don't care about 'total 42'
+    chomp @lines;
+    return @lines;
+}
+
 sub chdir {
     my $self = shift;
     my $to   = shift;

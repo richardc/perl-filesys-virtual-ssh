@@ -1,7 +1,7 @@
 #!perl
 use strict;
 use warnings;
-use Test::More tests => 24;
+use Test::More tests => 28;
 use Filesys::Virtual::Plain;
 use Filesys::Virtual::SSH;
 use File::Slurp::Tree;
@@ -67,6 +67,11 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     is_deeply( [ $vfs->list( "/" ) ],
                [ sort qw( . .. ), keys %$start_tree ],
                "list /" );
+
+    my @ls_al = $vfs->list_details("");
+    is( scalar @ls_al, 3, "list_details pulled back 3 things");
+    diag( $ls_al[2] );
+    like( $ls_al[2], qr/\sbaz$/, "seemed to get bar" );
 
 }
 
