@@ -8,6 +8,7 @@ use File::Slurp::Tree;
 use Cwd;
 
 if (eval { require Test::Differences; 1 }) {
+    no warnings 'redefine';
     *is_deeply = \&Test::Differences::eq_or_diff;
 }
 

@@ -1,6 +1,7 @@
 package Filesys::Virtual::SSH;
 use strict;
 use warnings;
+use File::Basename qw( basename );
 use Filesys::Virtual::Plain ();
 use base qw( Filesys::Virtual Class::Accessor::Fast );
 __PACKAGE__->mk_accessors(qw( cwd root_path home_path host ));
@@ -25,10 +26,9 @@ sub list {
     my $self = shift;
     my $final_path = $self->_path_from_root( shift );
 
-    my @files = `ls -a $final_path`;
+    my @files = `ls -a $final_path 2> /dev/null`;
     chomp (@files);
-    # XXX if it's a single arg, which is a file, just return the filename
-    return @files;
+    return map { basename $_ } @files;
 }
 
 sub chdir {
@@ -37,7 +37,7 @@ sub chdir {
 
     my $new_cwd   = $self->_resolve_path( $to );
     my $full_path = $self->_path_from_root( $to );
-    # XXX check what full_path is
+    # XXX check that full_path is a directory
     return $self->cwd( $new_cwd );
 }
 
