@@ -100,6 +100,14 @@ sub mkdir {
 }
 
 
+sub rmdir {
+    my $self = shift;
+    my $path = $self->_path_from_root( shift );
+    my $ret = `perl -e'print -d "$path" ? rmdir "$path" ? 1 : 0 : unlink "$path" ? 1 : 0'`;
+    return $ret;
+
+}
+
 =head1 AUTHOR
 
 Richard Clamp <richardc@unixbeard.net>

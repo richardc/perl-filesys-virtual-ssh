@@ -99,7 +99,14 @@ for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
     ok( $vfs->chmod( 0600, "/bar/baz" ), "chmod /bar/baz" );
     is( (stat "$root/bar/baz" )[2] & 07777, 0600, "chmod took" );
 
-    ok( $vfs->mkdir( "/ninja" ), "mkdir ninja" );
+    ok( $vfs->mkdir( "/ninja" ), "mkdir /ninja" );
     ok( -d "$root/ninja", "it was really made" );
+
+    ok( $vfs->rmdir( "/ninja" ), "rmdir /ninja" );
+    ok( !-e "$root/ninja", "it went" );
+
+    ok( !$vfs->rmdir( "/does_not_exist" ), "failed to rmdir /does_not_exist" );
+    ok( !$vfs->rmdir( "/bar" ), "failed to rmdir /bar" );
+
 
 }
