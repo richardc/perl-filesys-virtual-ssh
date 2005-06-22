@@ -7,7 +7,7 @@ use String::ShellQuote;
 use IO::File;
 use base qw( Filesys::Virtual Class::Accessor::Fast );
 __PACKAGE__->mk_accessors(qw( cwd root_path home_path host ));
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -158,8 +158,8 @@ sub close_read {
 sub open_write {
     my $self = shift;
     my $file = $self->_path_from_root( shift );
-    return IO::File->new("|".$self->_remote_command."cat >> $file") if @_;
-    return IO::File->new("|".$self->_remote_command."cat > $file");
+    return IO::File->new("|".$self->_remote_command."'cat >> $file'") if @_;
+    return IO::File->new("|".$self->_remote_command."'cat > $file'");
 }
 
 *close_write = \&close_read;
@@ -174,7 +174,7 @@ Richard Clamp <richardc@unixbeard.net>
 
 =head1 COPYRIGHT
 
-Copyright 2004 Richard Clamp.  All Rights Reserved.
+Copyright 2004, 2005 Richard Clamp.  All Rights Reserved.
 
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
