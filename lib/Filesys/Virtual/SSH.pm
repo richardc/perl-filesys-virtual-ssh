@@ -179,14 +179,6 @@ Copyright 2004, 2005 Richard Clamp.  All Rights Reserved.
 This program is free software; you can redistribute it
 and/or modify it under the same terms as Perl itself.
 
-
-=head1 BUGS
-
-None known.
-
-Bugs should be reported to me via the CPAN RT system.
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Filesys::Virtual::SSH>.
-
 =head1 SEE ALSO
 
 Filesys::Virtual, POE::Component::Server::FTP

@@ -2,6 +2,8 @@
 	Made the open_write method actually open files on the remote server
 	(Joel Bernstein)
 
+	Ripped out the reference to rt.cpan.org (I don't actually use it)
+
 0.02	Friday 30th April, 2004
 	unstealthed the dependency on String::ShellQuote, fixed a docubug
 
