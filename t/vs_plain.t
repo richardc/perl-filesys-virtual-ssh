@@ -27,7 +27,7 @@ my $tree = {
 
 SKIP:
 for my $class (map { "Filesys::Virtual::$_" } qw( Plain SSH )) {
-    if ($class =~ /::SSH$/ && hostname ne 'brains') {
+    if ($class =~ /::SSH$/ && hostname ne 'brains.local') {
         skip( "Not on brains, not doing SSH testing", $count );
     }
     my $root = cwd().'/t/test_root';
